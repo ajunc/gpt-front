@@ -5,13 +5,18 @@
                 <div class="title">ChartGPT AI</div>
                 <div class="ulView" id="ulView">
                       <div v-for="(item,index) in chartList" :key="index" class="chart-item">
-                        <span v-if="item.role == 'system'">
+                        <span v-if="item.role == 'system'" class="u-logo">
                           <span class="gpt-logo">G</span>
                         </span>
-                        <span v-else-if="item.role == 'user'">
+                        <span v-else-if="item.role == 'user'" class="u-logo">
                           <span class="user-logo">U</span>
                         </span>
-                        {{item.msg}}
+                        <div class="conten-container">
+                          <img :src="item.image_url" alt="" v-if="item.result_type == 2" width="100px">
+                          <div>
+                            {{item.output}}
+                          </div>
+                        </div>
                       </div>
                       <div v-show="isLoading">Loading...</div>
                 </div>
@@ -50,7 +55,13 @@ export default {
     // this.ws = this.CreateWebSocket(`ws://47.254.45.52:3000`)
     this.ws = this.CreateWebSocket(targetWsPort)
     this.ws.onopen = () => {
-        this.addMsg(2, '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！')
+        // this.addMsg(2, '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！')
+        this.addMsg(2, {
+          status: '',
+          output: '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！',
+          result_type: 1,
+          image_url: ''
+      })
     }
     this.ws.onmessage = evt => {
         // 这是服务端返回的数据
@@ -58,20 +69,20 @@ export default {
         console.log('evt.data-------', typeof evt.data)
         that.inputMsg = ''
         that.isLoading = false
-        that.addMsg(2, evt && evt.data && JSON.parse(evt.data).output);
+        that.addMsg(2, evt && evt.data && JSON.parse(evt.data));
     }
   },
   methods: {
-    addMsg: function(type, msg) {
+    addMsg: function(type, obj) {
         if(type == 1) {
             this.chartList.push({
                 role: 'user',
-                msg
+                ...obj
             })
         } else {
             this.chartList.push({
                 role: 'system',
-                msg
+                ...obj
             })
         }
     },
@@ -90,7 +101,12 @@ export default {
       }
         this.isLoading = true
         this.ws.send(`${this.inputMsg}&user_account${this.user_account}&conversation_id${this.conversation_id}`);
-        this.addMsg(1, this.inputMsg);
+        this.addMsg(1, {
+          status: '',
+          output: this.inputMsg,
+          result_type: 1,
+          image_url: ''
+        })
     }
   }
 }
@@ -105,12 +121,16 @@ export default {
   height: 30px;
 }
 .chart-item{
-  line-height: 1.3;
+  display: flex;
+  line-height: 1;
   border-bottom: 1px solid #ccc;
   width: 600px;
   text-align: left;
   margin: 00px auto;
   padding: 8px;
+}
+.u-logo{
+  margin-right: 15px;
 }
 .gpt-logo{
   display: inline-block;
