@@ -1,15 +1,16 @@
 <template>
-  <div class="hello">
+  <div class="index-container">
+    <LeftBar />
     <div class="chartContainer">
             <div class="box">
                 <div class="title">ChartGPT AI</div>
                 <div class="ulView" id="ulView">
                       <div v-for="(item,index) in chartList" :key="index" class="chart-item">
                         <span v-if="item.role == 'system'" class="u-logo">
-                          <span class="gpt-logo">G</span>
+                          <img class="gpt-logo" src="../../public/ChatGPT.png" alt="">
                         </span>
                         <span v-else-if="item.role == 'user'" class="u-logo">
-                          <span class="user-logo">U</span>
+                            <img class="user-logo" src="../../public/user.jpeg" alt="">
                         </span>
                         <div class="conten-container">
                           <img :src="item.image_url" alt="" v-if="item.result_type == 2" width="100px">
@@ -21,10 +22,12 @@
                       <div v-show="isLoading">Loading...</div>
                 </div>
                 <div class="inputBox">
-                  <div>
-                    <input v-model="inputMsg" class="inputMsg" placeholder="你想说什么..." type="text" />
-                    <div class="send" id="btn" @click="handleSend">发送</div>
-                  </div>
+                    <div class="sendContainer">
+                        <input v-model="inputMsg" class="inputMsg" placeholder="" type="text" />
+                        <div class="send" id="btn" @click="handleSend">
+                            <img src="../../public/send_grey.png" alt="" class="send-icon">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -33,8 +36,9 @@
 
 <script>
 import {targetWsPort} from '../../proxy'
+import LeftBar from "../components/LeftBar.vue"
 export default {
-  name: 'HelloWorld',
+  name: 'Index',
   data() {
     return {
       chartList: [],
@@ -44,6 +48,9 @@ export default {
       conversation_id: '',
       ws: ''
     }
+  },
+  components: {
+    LeftBar
   },
   props: {
     msg: String
@@ -113,6 +120,27 @@ export default {
 </script>
 
 <style scoped>
+.index-container{
+    display: flex;
+}
+.conten-container{
+    max-width: 90%;
+    min-width: 10%;
+    background: #f5f5f5;
+    border: 1px solid #dbdbdb;
+    border-radius: 2px;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.3;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #3c3c3c;
+    word-wrap: break-word;
+}
+.chartContainer{
+    width: 100%;
+    padding-left: 300px;
+}
 .title{
   margin-bottom: 30px;
 }
@@ -120,10 +148,17 @@ export default {
   width: 30px;
   height: 30px;
 }
+.send-icon{
+    width: 25px;
+}
+.sendContainer{
+    width: 90%;
+    position: relative;
+    margin: 0 auto;
+}
 .chart-item{
   display: flex;
   line-height: 1;
-  border-bottom: 1px solid #ccc;
   width: 600px;
   text-align: left;
   margin: 00px auto;
@@ -135,21 +170,11 @@ export default {
 .gpt-logo{
   display: inline-block;
   width: 30px;
-  height: 30px;
-  color: #fff;
-  background: green;
-  text-align: center;
-  line-height: 30px;
-  border-radius: 5px;
 }
 .user-logo{
   display: inline-block;
   width: 30px;
   height: 30px;
-  background: gray;
-  color: #fff;
-  text-align: center;
-  line-height: 30px;
   border-radius: 5px;
 }
 .ulView{
@@ -159,37 +184,32 @@ export default {
 .inputBox{
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 300px;
   right: 0;
   padding: 15px;
+  text-align: center;
 }
 .inputMsg{
-  width: 300px;
-  display: inline-block;
-  height: 40px;
-  box-sizing: border-box;
-  border: 2px solid #c4c7ce;
-  border-right: 0;
-  border-radius: 10px 0 0 10px;
-  vertical-align: top;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #cacaca;
+    box-shadow: 0 1px 8px 0 hsla(0,0%,89%,.39);
+    border-radius: 5px;
+    font-size: 15px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #1a1818;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 10px 15px;
 }
 .send{
-    display: inline-block;
-    width: 112px;
-    height: 40px;
-    border-left: 0;
-    padding: 0;
-    line-height: 41px;
-    font-size: 17px;
-    font-weight: 400;
-    font-family: Arial;
-    letter-spacing: 1px;
-    background: #4e6ef2;
-    color: #fff;
-    border: 0;
-    box-sizing: border-box;
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+.send:hover {
     cursor: pointer;
-    border-radius: 0 10px 10px 0;
-    letter-spacing: normal;
 }
 </style>
