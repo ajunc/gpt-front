@@ -27,12 +27,17 @@ service.interceptors.response.use(
          */
         return new Promise((resolve, reject) => {
             const res = response.data
-
+            if(!res) {
+                reject()
+            }
             resolve(res)
         })
     },
     error => {
         return new Promise((resolve, reject) => {
+            if(!error) {
+                resolve()
+            }
             console.log('err' + error) 
             reject(error.response)
         })

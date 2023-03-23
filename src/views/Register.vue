@@ -1,23 +1,27 @@
 <template>
-  <div class="login-container">
+  <div class="register-container">
     <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="年龄" prop="user_account">
-        <el-input v-model.number="ruleForm.user_account"></el-input>
+      <el-form-item label="用户名" prop="use_account">
+        <el-input v-model.number="ruleForm.use_account"></el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="pass">
-        <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
+      <el-form-item label="昵称" prop="user_name">
+        <el-input v-model.number="ruleForm.user_name"></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="passwd">
+        <el-input type="password" v-model="ruleForm.passwd" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="确认密码" prop="checkPass">
         <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
+      <el-form-item class="btn-container">
+        <el-button type="primary" @click="submitForm('ruleForm')" :loading="loading">提交</el-button>
+        <el-button @click="resetForm('ruleForm')">取消</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 <script>
+  import { signUp } from "../api"
   export default {
     data() {
       var validatePass = (rule, value, callback) => {
@@ -33,23 +37,25 @@
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请再次输入密码'));
-        } else if (value !== this.ruleForm.pass) {
+        } else if (value !== this.ruleForm.passwd) {
           callback(new Error('两次输入密码不一致!'));
         } else {
           callback();
         }
       };
       return {
+        loading: false,
         ruleForm: {
-          pass: '',
+          passwd: '',
           checkPass: '',
-          user_account: ''
+          user_name: '',
+          use_account: ''
         },
         rules: {
-          user_account: [
+          use_account: [
             { required: true, message: '请输入用户名', trigger: 'blur' }
           ],
-          pass: [
+          passwd: [
             { required: true, message: '请输入密码', trigger: 'blur' },
             { validator: validatePass, trigger: 'blur' }
           ],
@@ -64,22 +70,46 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            this.loading = true
+            signUp(this.ruleForm).then( res => {
+              if(res.status == "OK") {
+                this.$message({
+                  message: '恭喜你，账号注册成功！',
+                  type: 'success'
+                });
+              } else {
+                this.$message.error(res.description || "注册失败，请稍后再试~");
+              }
+              this.loading = false
+            }).catch( error => {
+              console.log(error)
+              this.loading = false
+            })
           } else {
-            console.log('error submit!!');
             return false;
           }
         });
+        
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
+        this.$router.push({
+          path: "/"
+        })
       }
     }
   }
 </script>
 <style scoped>
-.login-container{
-  width: 60%;
-  margin: 0 auto;
+.register-container{
+  box-sizing: border-box;
+  width: 800px;
+  margin: 100px auto 40px;
+  background: #f5f5f5;
+  padding: 60px 120px;
+}
+.btn-container{
+  margin-top: 40px;
+  margin-bottom: 0;
 }
 </style>

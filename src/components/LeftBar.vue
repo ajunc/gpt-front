@@ -31,15 +31,15 @@ export default {
 
 <style scoped>
 .left-bar-container{
+    box-sizing: border-box;
+    position: absolute;
     padding: 10px;
     width: 298px;
     height: 100%;
     background: #000;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 10000;
+    z-index: 10;
     color: #fff;
+    padding-top: 56px;
 }
 .chat-list-title{
   padding: 22px 17px 17px 12px;

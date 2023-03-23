@@ -1,42 +1,40 @@
 <template>
   <div class="index-container">
-    <LeftBar />
     <div class="chartContainer">
-            <div class="box">
-                <div class="title">ChartGPT AI</div>
-                <div class="ulView" id="ulView">
-                      <div v-for="(item,index) in chartList" :key="index" class="chart-item">
-                        <span v-if="item.role == 'system'" class="u-logo">
-                          <img class="gpt-logo" src="../../public/ChatGPT.png" alt="">
-                        </span>
-                        <span v-else-if="item.role == 'user'" class="u-logo">
-                            <img class="user-logo" src="../../public/user.jpeg" alt="">
-                        </span>
-                        <div class="conten-container">
-                          <img :src="item.image_url" alt="" v-if="item.result_type == 2" width="100px">
-                          <div>
-                            {{item.output}}
-                          </div>
-                        </div>
-                      </div>
-                      <div v-show="isLoading">Loading...</div>
-                </div>
-                <div class="inputBox">
-                    <div class="sendContainer">
-                        <input v-model="inputMsg" class="inputMsg" placeholder="" type="text" />
-                        <div class="send" id="btn" @click="handleSend">
-                            <img src="../../public/send_grey.png" alt="" class="send-icon">
-                        </div>
+      <div class="box">
+          <div class="title">ChartGPT AI</div>
+          <div class="ulView" id="ulView">
+                <div v-for="(item,index) in chartList" :key="index" class="chart-item">
+                  <span v-if="item.role == 'system'" class="u-logo">
+                    <img class="gpt-logo" src="../../public/ChatGPT.png" alt="">
+                  </span>
+                  <span v-else-if="item.role == 'user'" class="u-logo">
+                      <img class="user-logo" src="../../public/user.jpeg" alt="">
+                  </span>
+                  <div class="conten-container">
+                    <img :src="item.image_url" alt="" v-if="item.result_type == 2" width="100px">
+                    <div>
+                      {{item.output}}
                     </div>
+                  </div>
                 </div>
-            </div>
+                <div class="loading-tip" v-show="isLoading">Loading...</div>
+          </div>
+          <div class="inputBox">
+              <div class="sendContainer">
+                  <input v-model="inputMsg" class="inputMsg" placeholder="" type="text" />
+                  <div class="send" id="btn" @click="handleSend">
+                      <img src="../../public/send_grey.png" alt="" class="send-icon">
+                  </div>
+              </div>
+          </div>
         </div>
+      </div>
   </div>
 </template>
 
 <script>
 import {targetWsPort} from '../../proxy'
-import LeftBar from "../components/LeftBar.vue"
 export default {
   name: 'Index',
   data() {
@@ -50,7 +48,6 @@ export default {
     }
   },
   components: {
-    LeftBar
   },
   props: {
     msg: String
@@ -139,10 +136,10 @@ export default {
 }
 .chartContainer{
     width: 100%;
-    padding-left: 300px;
 }
 .title{
-  margin-bottom: 30px;
+  text-align: center;
+  margin: 30px 0;
 }
 .icon{
   width: 30px;
@@ -180,6 +177,9 @@ export default {
 .ulView{
   height: 500px;
   overflow-y: scroll;
+}
+.loading-tip{
+  text-align: center;
 }
 .inputBox{
   position: fixed;

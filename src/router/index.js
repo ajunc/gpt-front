@@ -5,7 +5,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 /*引入pages*/
-const Login = ()=>import('../views/Login');
+const Register = ()=>import('../views/Register');
 const Index = ()=>import('../views/index');
 
 //申明使用插件
@@ -19,8 +19,8 @@ export default new VueRouter({
       meta: {}
     },
     {
-      path:'/login',
-      component: Login,
+      path:'/register',
+      component: Register,
       meta: {
         showFooter: true
       }

@@ -1,8 +1,8 @@
-import request from '@/utils/request'
+import http from '@/utils/request'
 
-export function setForm (params) {
-    return request({
-        url: '/api/form/detials',
+export function signUp (params) {
+    return http.post({
+        url: '/api/sign_up',
         method: 'post',
         data: params
     })

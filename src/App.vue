@@ -1,23 +1,34 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <div class="layout-wrap">
+      <HeaderComp />
+      <LeftBar />
+      <div class="right-content-contain">
+        <router-view></router-view>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-
+import LeftBar from "./components/LeftBar.vue"
+import HeaderComp from "./components/Header.vue"
 export default {
   name: 'App',
-  components: {}
+  components: {
+    LeftBar,
+    HeaderComp
+  }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+.layout-wrap{
+  display: flex;
+}
+.right-content-contain{
+  margin-top: 56px;
+  margin-left: 298px;
+  flex-grow: 1;
 }
 </style>
