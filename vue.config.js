@@ -8,5 +8,15 @@ module.exports = {
                 changeOrigin: true
             }
         }
+    },
+    css: {
+        //查看CSS属于哪个css文件
+        // sourceMap: true,
+        loaderOptions: {
+            scss: {
+                additionalData: `@import "@/theme-customer.scss";`,
+                sassOptions: { outputStyle: "expanded" }
+            }
+        }
     }
 }

@@ -1,8 +1,8 @@
 <template>
   <div class="register-container">
     <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-      <el-form-item label="用户名" prop="use_account">
-        <el-input v-model.number="ruleForm.use_account"></el-input>
+      <el-form-item label="用户名" prop="user_account">
+        <el-input v-model.number="ruleForm.user_account"></el-input>
       </el-form-item>
       <el-form-item label="昵称" prop="user_name">
         <el-input v-model.number="ruleForm.user_name"></el-input>
@@ -49,10 +49,10 @@
           passwd: '',
           checkPass: '',
           user_name: '',
-          use_account: ''
+          user_account: ''
         },
         rules: {
-          use_account: [
+          user_account: [
             { required: true, message: '请输入用户名', trigger: 'blur' }
           ],
           passwd: [
@@ -105,8 +105,8 @@
   box-sizing: border-box;
   width: 800px;
   margin: 100px auto 40px;
-  background: #f5f5f5;
   padding: 60px 120px;
+  box-shadow: 0 3px 21px #c3c3c352;
 }
 .btn-container{
   margin-top: 40px;
