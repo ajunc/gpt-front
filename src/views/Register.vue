@@ -1,6 +1,14 @@
 <template>
   <div class="register-container">
-    <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+    <el-form
+      :model="ruleForm"
+      status-icon
+      :rules="rules"
+      ref="ruleForm"
+      label-width="100px"
+      class="demo-ruleForm"
+      size="mini"
+    >
       <el-form-item label="用户名" prop="user_account">
         <el-input v-model.number="ruleForm.user_account"></el-input>
       </el-form-item>
@@ -77,6 +85,7 @@
                   message: '恭喜你，账号注册成功！',
                   type: 'success'
                 });
+                this.$emit('loginStatusChange')
               } else {
                 this.$message.error(res.description || "注册失败，请稍后再试~");
               }
@@ -103,8 +112,8 @@
 <style scoped>
 .register-container{
   box-sizing: border-box;
-  width: 800px;
-  margin: 100px auto 40px;
+  width: 50%;
+  margin: 50px auto 40px;
   padding: 60px 120px;
   box-shadow: 0 3px 21px #c3c3c352;
 }

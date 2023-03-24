@@ -14,7 +14,7 @@ module.exports = {
         // sourceMap: true,
         loaderOptions: {
             scss: {
-                additionalData: `@import "@/theme-customer.scss";`,
+                // additionalData: `@import "@/theme-customer.scss";`,
                 sassOptions: { outputStyle: "expanded" }
             }
         }

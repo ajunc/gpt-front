@@ -48,6 +48,7 @@ export default {
     }
   },
   components: {
+    
   },
   props: {
     msg: String
@@ -92,11 +93,11 @@ export default {
     },
 
     CreateWebSocket: (() => {
-        return (urlValue) => {
-            if (window.WebSocket) return new WebSocket(urlValue);
-            // if (window.MozWebSocket) return new MozWebSocket(urlValue);
-            return false;
-        }
+      return (urlValue) => {
+        if (window.WebSocket) return new WebSocket(urlValue);
+        // if (window.MozWebSocket) return new MozWebSocket(urlValue);
+        return false;
+      }
     })(),
 
     handleSend: function() {

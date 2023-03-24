@@ -1,45 +1,91 @@
 <template>
     <header class="header-container">
         <div class="logon-container"></div>
-        <div class="user-info-container">
-            <el-avatar shape="square" :size="32" class="user-img-contain" >
-              <img src="../assets/user.jpg" alt="">
-            </el-avatar>
-            <div class="head-user-info">
-              <div class="user-info-wrap">
-                <div>Ben</div>
-              </div>
-              <div class="user-info-wrap logout-btn">
-                <div @click="handleLogout">退出登录</div>
-              </div>
-            </div>
-        </div>
+        <el-menu class="el-menu-demo" :default-active="activeIndex" mode="horizontal">
+          <el-submenu index="2">
+            <template slot="title">
+              <el-avatar shape="square" :size="32" class="user-img-contain">
+                <img src="../assets/user.jpg" alt="">
+              </el-avatar>
+            </template>
+            <el-menu-item index="2-1" v-if="isLogin">{{uname}}</el-menu-item>
+            <el-menu-item index="2-2" @click="handleLogout" v-if="isLogin">退出登录</el-menu-item>
+            <el-menu-item index="2-2" @click="handleShowLogin" v-if="!isLogin">登陆</el-menu-item>
+            <el-menu-item index="2-2" @click="toRegister" v-if="!isLogin">注册</el-menu-item>
+          </el-submenu>
+        </el-menu>
     </header>
   </template>
   
   <script>
+  import { logout } from "../api"
   export default {
     name: 'Header',
     data() {
       return {
-        
+        uname: ''
       }
     },
     props: {
-      msg: String
+      isLogin: Boolean
     },
-    mounted() {
-      
+    created() {
+      this.getUInfo()
+    },
+    watch: {
+        isLogin(newVal, oldVal) {
+            this.getUInfo()
+        },
     },
     methods: {
+      handleShowLogin() {
+        this.$emit('handleShow')
+      },
+      getUInfo() {
+        let unamel = window.localStorage.getItem('uname')
+        this.uname = unamel || ''
+      },
+      toRegister() {
+        this.$router.push('/register')
+      },
       handleLogout() {
-
+        logout().then( res => {
+          if(res.status == "OK") {
+            this.$message({
+              message: '已退出登陆！',
+              type: 'success'
+            });
+            window.localStorage.removeItem('uname')
+            window.localStorage.removeItem('token')
+            this.$emit('loginStatusChange')
+          } else {
+            this.$message.error(res.description || "退出登陆失败，请稍后再试~");
+          }
+        }).catch( error => {
+          console.log(error)
+        })
       }
     }
   }
   </script>
   
-  <style scoped>
+  <style scoped lang="scss">
+  ::v-deep .el-menu{
+      border: none;
+  }
+  ::v-deep .el-menu.el-menu--horizontal{
+    border: none;
+  }
+  ::v-deep .el-menu--horizontal>.el-submenu .el-submenu__title{
+    height: 32px;
+    line-height: 32px;
+  }
+  ::v-deep .el-menu--horizontal>.el-submenu.is-active .el-submenu__title{
+    border-bottom: none;
+  }
+  ::v-deep .el-menu--popup-bottom-start{
+    min-width: 120px !important;
+  }
   .header-container {
     position: fixed;
     top: 0;
@@ -55,11 +101,14 @@
   .user-img-contain:hover{
       
   }
+  .show-info{
+    display: block !important;
+  }
   .head-user-info{
     position: absolute;
     right: 27px;
     top: 57px;
-    display: block;
+    display: none;
     box-sizing: border-box;
     color: rgba(0,0,0,.85);
     font-size: 14px;
