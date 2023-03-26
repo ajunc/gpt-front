@@ -12,14 +12,11 @@
       <el-form-item label="用户名" prop="user_account">
         <el-input v-model.number="ruleForm.user_account"></el-input>
       </el-form-item>
-      <el-form-item label="昵称" prop="user_name">
-        <el-input v-model.number="ruleForm.user_name"></el-input>
+      <el-form-item label="充值金额" prop="payment">
+        <el-input type="number" v-model.number="ruleForm.payment"></el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="passwd">
-        <el-input type="password" v-model="ruleForm.passwd" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="确认密码" prop="checkPass">
-        <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
+      <el-form-item label="管理员口令" prop="token">
+        <el-input type="password" v-model="ruleForm.token" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item class="btn-container">
         <el-button type="primary" @click="submitForm('ruleForm')" :loading="loading">提交</el-button>
@@ -29,47 +26,26 @@
   </div>
 </template>
 <script>
-  import { signUp } from "../api"
+  import { administerPay } from "../api"
   export default {
     data() {
-      var validatePass = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入密码'));
-        } else {
-          if (this.ruleForm.checkPass !== '') {
-            this.$refs.ruleForm.validateField('checkPass');
-          }
-          callback();
-        }
-      };
-      var validatePass2 = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请再次输入密码'));
-        } else if (value !== this.ruleForm.passwd) {
-          callback(new Error('两次输入密码不一致!'));
-        } else {
-          callback();
-        }
-      };
       return {
         loading: false,
         ruleForm: {
-          passwd: '',
+          token: '',
           checkPass: '',
-          user_name: '',
+          payment: '',
           user_account: ''
         },
         rules: {
           user_account: [
             { required: true, message: '请输入用户名', trigger: 'blur' }
           ],
-          passwd: [
-            { required: true, message: '请输入密码', trigger: 'blur' },
-            { validator: validatePass, trigger: 'blur' }
+          payment: [
+            { required: true, message: '请输入充值金额', trigger: 'blur' }
           ],
-          checkPass: [
+          token: [
             { required: true, message: '请输入密码', trigger: 'blur' },
-            { validator: validatePass2, trigger: 'blur' }
           ]
         }
       };
@@ -79,27 +55,15 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.loading = true
-            signUp(this.ruleForm).then( res => {
+            administerPay(this.ruleForm).then( res => {
               if(res.status == "OK") {
                 this.$message({
-                  message: '恭喜你，账号注册成功！',
+                  message: '充值成功！',
                   type: 'success'
                 });
-
-                this.$store.dispatch("HandleIslogin", true)
-                this.$store.dispatch("HandleUserInfo", {
-                  uName: res.user_name,
-                  uId: res.user_account,
-                  remaining_words: res.remaining.remaining_words,
-                  remaining_images:  res.remaining.remaining_words
-                })
-
-                this.$router.push({
-                  path: "/"
-                })
-
+                this.$refs[formName].resetFields();
               } else {
-                this.$message.error(res.description || "注册失败，请稍后再试~");
+                this.$message.error(res.description || "充值失败，请稍后再试~");
               }
               this.loading = false
             }).catch( error => {

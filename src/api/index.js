@@ -8,6 +8,14 @@ export function signUp (params) {
     })
 }
 
+export function administerPay (params) {
+    return http.post({
+        url: '/api/administer_pay',
+        method: 'post',
+        data: params
+    })
+}
+
 export function login (params) {
     return http.post({
         url: '/api/login',

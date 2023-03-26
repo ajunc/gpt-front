@@ -8,7 +8,7 @@
                 <img src="../assets/user.jpg" alt="">
               </el-avatar>
             </template>
-            <el-menu-item index="2-1" v-if="isLogin">{{uname}}</el-menu-item>
+            <el-menu-item index="2-1" v-if="isLogin">{{userInfo.uName}}</el-menu-item>
             <el-menu-item index="2-2" @click="handleLogout" v-if="isLogin">退出登录</el-menu-item>
             <el-menu-item index="2-2" @click="handleShowLogin" v-if="!isLogin">登陆</el-menu-item>
             <el-menu-item index="2-2" @click="toRegister" v-if="!isLogin">注册</el-menu-item>
@@ -19,31 +19,28 @@
   
   <script>
   import { logout } from "../api"
+  import { mapGetters, mapState } from 'vuex'
   export default {
     name: 'Header',
     data() {
-      return {
-        uname: ''
-      }
+      return {}
     },
     props: {
-      isLogin: Boolean
+      
     },
-    created() {
-      this.getUInfo()
-    },
+    created() {},
     watch: {
-        isLogin(newVal, oldVal) {
-            this.getUInfo()
-        },
+        
+    },
+    computed: {
+        ...mapGetters([
+            'isLogin',
+            'userInfo'
+        ]),
     },
     methods: {
       handleShowLogin() {
         this.$emit('handleShow')
-      },
-      getUInfo() {
-        let unamel = window.localStorage.getItem('uname')
-        this.uname = unamel || ''
       },
       toRegister() {
         this.$router.push('/register')
@@ -55,9 +52,15 @@
               message: '已退出登陆！',
               type: 'success'
             });
-            window.localStorage.removeItem('uname')
-            window.localStorage.removeItem('token')
-            this.$emit('loginStatusChange')
+            
+            this.$store.dispatch("HandleIslogin", false)
+            this.$store.dispatch("HandleUserInfo", {
+              uName: '',
+              uId: '',
+              remaining_words: '',
+              remaining_images:  ''
+            })
+            
           } else {
             this.$message.error(res.description || "退出登陆失败，请稍后再试~");
           }

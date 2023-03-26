@@ -2,7 +2,10 @@
     <div>
         <el-dialog
             title="登陆"
+            :closeOnClickModal="false"
             :visible.sync="dialogVisible"
+            :before-close="handleClose"
+            append-to-body
             width="30%"
         >
             <el-form
@@ -57,11 +60,7 @@ export default {
     created() {},
     watch: {
         isShow(newVal, oldVal) {
-            if(newVal) {
-                this.dialogVisible = true
-            } else {
-                this.dialogVisible = false
-            }
+            this.dialogVisible = newVal
         },
     },
     methods: {
@@ -75,11 +74,18 @@ export default {
                   message: '登陆成功！',
                   type: 'success'
                 });
-                window.localStorage.setItem('uname', res.user_name || '')
-                window.localStorage.setItem('token', res.token || '')
+
+                this.$store.dispatch("HandleIslogin", true)
+                this.$store.dispatch("HandleUserInfo", {
+                  uName: res.user_name,
+                  uId: res.user_account,
+                  remaining_words: res.remaining.remaining_words,
+                  remaining_images:  res.remaining.remaining_words
+                })
+                
                 this.$refs[formName].resetFields();
-                this.dialogVisible = false
-                this.$emit('loginStatusChange')
+                this.$emit('handleHide')
+                
               } else {
                 this.$message.error(res.description || "登陆失败，请稍后再试~");
               }
@@ -95,7 +101,10 @@ export default {
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
-        this.dialogVisible = false
+        this.$emit('handleHide')
+      },
+      handleClose() {
+        this.$emit('handleHide')
       }
     }
   }

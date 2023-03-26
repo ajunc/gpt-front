@@ -2,7 +2,7 @@
   <div class="index-container">
     <div class="chartContainer">
       <div class="box">
-          <div class="title">ChartGPT AI {{isLogin}}</div>
+          <div class="title">ChartGPT AI</div>
           <div class="ulView" id="ulView">
                 <div v-for="(item,index) in chartList" :key="index" class="chart-item">
                   <span v-if="item.role == 'system'" class="u-logo">
@@ -45,7 +45,6 @@ export default {
       isLoading: false,
       user_account: '',
       conversation_id: '',
-      isLogin: 'false',
       ws: ''
     }
   },
@@ -59,8 +58,6 @@ export default {
     this.getUserInfo()
   },
   mounted() {
-    let a =  this.$store.getters
-    debugger
     let that = this
     this.user_account = Math.floor(Math.random() * 10000000000)
     this.conversation_id = Math.floor(Math.random() * 10000000000)
@@ -81,18 +78,40 @@ export default {
         console.log('evt.data-------', typeof evt.data)
         that.inputMsg = ''
         that.isLoading = false
-        that.addMsg(2, evt && evt.data && JSON.parse(evt.data));
+        let res = evt && evt.data && JSON.parse(evt.data)
+        that.addMsg(2, res);
+
+        if(res.status == "OK" || res.status == "ANONYMOUS_USER") {
+          this.$store.dispatch("HandleUserInfo", {
+            remaining_words: res.remaining.remaining_words,
+            remaining_images: res.remaining.remaining_images
+          })
+        } else if(res.status == "INVALID_TOKEN") {
+          this.getUserInfo()
+        }
     }
   },
   methods: {
     getUserInfo: function(){
       getUserinfoApi().then( res => {
         if(res.status == "OK") { //用户已登录
-          
+          this.$store.dispatch("HandleIslogin", true)
+          this.$store.dispatch("HandleUserInfo", {
+            uName: res.user_name,
+            uId: res.user_account,
+            remaining_words: res.remaining.remaining_words,
+            remaining_images:  res.remaining.remaining_words
+          })
         } else if(res.status == "ANONYMOUS_USER") { //游客模式
           this.$store.dispatch("HandleIslogin", false)
+          this.$store.dispatch("HandleUserInfo", {
+            uName: res.user_name,
+            uId: res.user_account,
+            remaining_words: res.remaining.remaining_words,
+            remaining_images:  res.remaining.remaining_words
+          })
         } else if (res.status == "INVALID_TOKEN") { //token失效
-
+          this.$store.dispatch("HandleIslogin", false)
         }
       }).catch( error => {
         console.log(error)

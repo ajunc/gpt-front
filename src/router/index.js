@@ -6,6 +6,7 @@ import VueRouter from 'vue-router'
 
 /*引入pages*/
 const Register = ()=>import('../views/Register');
+const AdministerPay = ()=>import('../views/AdministerPay');
 const Index = ()=>import('../views/index');
 
 //申明使用插件
@@ -22,8 +23,13 @@ export default new VueRouter({
       path:'/register',
       component: Register,
       meta: {
-        showFooter: true
+        // showFooter: true
       }
+    },
+    {
+      path:'/administer_pay',
+      component: AdministerPay,
+      meta: {}
     },
     {
       path: '/',
