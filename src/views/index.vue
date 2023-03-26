@@ -2,7 +2,7 @@
   <div class="index-container">
     <div class="chartContainer">
       <div class="box">
-          <div class="title">ChartGPT AI</div>
+          <div class="title">ChartGPT AI {{isLogin}}</div>
           <div class="ulView" id="ulView">
                 <div v-for="(item,index) in chartList" :key="index" class="chart-item">
                   <span v-if="item.role == 'system'" class="u-logo">
@@ -35,6 +35,7 @@
 
 <script>
 import {targetWsPort} from '../../proxy'
+ import { getUserinfoApi } from "../api"
 export default {
   name: 'Index',
   data() {
@@ -44,6 +45,7 @@ export default {
       isLoading: false,
       user_account: '',
       conversation_id: '',
+      isLogin: 'false',
       ws: ''
     }
   },
@@ -53,7 +55,12 @@ export default {
   props: {
     msg: String
   },
+  created() {
+    this.getUserInfo()
+  },
   mounted() {
+    let a =  this.$store.getters
+    debugger
     let that = this
     this.user_account = Math.floor(Math.random() * 10000000000)
     this.conversation_id = Math.floor(Math.random() * 10000000000)
@@ -78,6 +85,20 @@ export default {
     }
   },
   methods: {
+    getUserInfo: function(){
+      getUserinfoApi().then( res => {
+        if(res.status == "OK") { //用户已登录
+          
+        } else if(res.status == "ANONYMOUS_USER") { //游客模式
+          this.$store.dispatch("HandleIslogin", false)
+        } else if (res.status == "INVALID_TOKEN") { //token失效
+
+        }
+      }).catch( error => {
+        console.log(error)
+        this.loading = false
+      })
+    },
     addMsg: function(type, obj) {
         if(type == 1) {
             this.chartList.push({

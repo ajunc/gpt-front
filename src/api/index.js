@@ -23,3 +23,11 @@ export function logout (params) {
         data: params
     })
 }
+
+export function getUserinfoApi (params) {
+    return http.post({
+        url: '/api/get_user_info',
+        method: 'post',
+        data: params
+    })
+}
