@@ -35,7 +35,7 @@
 
 <script>
 import {targetWsPort} from '../../proxy'
- import { getUserinfoApi } from "../api"
+import { getUserinfoApi, queryLargeModel } from "../api"
 export default {
   name: 'Index',
   data() {
@@ -58,38 +58,44 @@ export default {
     this.getUserInfo()
   },
   mounted() {
-    let that = this
-    this.user_account = Math.floor(Math.random() * 10000000000)
+    this.addMsg(2, {
+      status: '',
+      output: '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！',
+      result_type: 1,
+      image_url: ''
+    })
+    // let that = this
+    // this.user_account = Math.floor(Math.random() * 10000000000)
     this.conversation_id = Math.floor(Math.random() * 10000000000)
     // this.ws = this.CreateWebSocket(`ws://47.254.45.52:3000`)
-    this.ws = this.CreateWebSocket(targetWsPort)
-    this.ws.onopen = () => {
-        // this.addMsg(2, '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！')
-        this.addMsg(2, {
-          status: '',
-          output: '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！',
-          result_type: 1,
-          image_url: ''
-      })
-    }
-    this.ws.onmessage = evt => {
-        // 这是服务端返回的数据
-        console.log('evt.data-------', evt.data)
-        console.log('evt.data-------', typeof evt.data)
-        that.inputMsg = ''
-        that.isLoading = false
-        let res = evt && evt.data && JSON.parse(evt.data)
-        that.addMsg(2, res);
+    // this.ws = this.CreateWebSocket(targetWsPort)
+    // this.ws.onopen = () => {
+    //     // this.addMsg(2, '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！')
+    //     this.addMsg(2, {
+    //       status: '',
+    //       output: '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！',
+    //       result_type: 1,
+    //       image_url: ''
+    //   })
+    // }
+    // this.ws.onmessage = evt => {
+    //     // 这是服务端返回的数据
+    //     console.log('evt.data-------', evt.data)
+    //     console.log('evt.data-------', typeof evt.data)
+    //     that.inputMsg = ''
+    //     that.isLoading = false
+    //     let res = evt && evt.data && JSON.parse(evt.data)
+    //     that.addMsg(2, res);
 
-        if(res.status == "OK" || res.status == "ANONYMOUS_USER") {
-          this.$store.dispatch("HandleUserInfo", {
-            remaining_words: res.remaining.remaining_words,
-            remaining_images: res.remaining.remaining_images
-          })
-        } else if(res.status == "INVALID_TOKEN") {
-          this.getUserInfo()
-        }
-    }
+    //     if(res.status == "OK" || res.status == "ANONYMOUS_USER") {
+    //       this.$store.dispatch("HandleUserInfo", {
+    //         remaining_words: res.remaining.remaining_words,
+    //         remaining_images: res.remaining.remaining_images
+    //       })
+    //     } else if(res.status == "INVALID_TOKEN") {
+    //       this.getUserInfo()
+    //     }
+    // }
   },
   methods: {
     getUserInfo: function(){
@@ -145,12 +151,35 @@ export default {
         return
       }
         this.isLoading = true
-        this.ws.send(`${this.inputMsg}&user_account${this.user_account}&conversation_id${this.conversation_id}`);
         this.addMsg(1, {
           status: '',
           output: this.inputMsg,
           result_type: 1,
           image_url: ''
+        })
+
+        let params = `[{"role": "user", "content": "${this.inputMsg}"}]`
+        queryLargeModel({
+          messages: encodeURI(params),
+          conversation_id: this.conversation_id || ''
+        }).then( res => {
+          if(res.status == "OK" || res.status == "ANONYMOUS_USER") { //用户已登录
+            this.addMsg(2, res);
+
+            this.$store.dispatch("HandleUserInfo", {
+              remaining_words: res.remaining.remaining_words,
+              remaining_images: res.remaining.remaining_images
+            })
+          } else if (res.status == "INVALID_TOKEN") { //token失效
+            this.$store.dispatch("HandleIslogin", false)
+          } else if (res.status == "ERROR") {
+            this.$message.error(res.output || "信息发送失败，请稍后再试~");
+          }
+          this.loading = false
+          this.isLoading = false
+        }).catch( error => {
+          console.log(error)
+          this.loading = false
         })
     }
   }

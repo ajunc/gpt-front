@@ -39,3 +39,11 @@ export function getUserinfoApi (params) {
         data: params
     })
 }
+
+export function queryLargeModel (params) {
+    return http.post({
+        url: '/api/query_large_model',
+        method: 'post',
+        data: params
+    })
+}
