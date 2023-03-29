@@ -10,18 +10,17 @@
         >
             <el-form
                 :model="ruleForm"
-                status-icon
                 :rules="rules"
                 ref="ruleForm"
                 label-width="100px"
                 class="demo-ruleForm"
-                size="mini"
+                size="medium"
             >
                 <el-form-item label="用户名" prop="user_account">
-                    <el-input v-model.number="ruleForm.user_account"></el-input>
+                    <el-input v-model="ruleForm.user_account" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="密码" prop="passwd">
-                    <el-input type="password" v-model="ruleForm.passwd" autocomplete="off"></el-input>
+                    <el-input type="password" v-model="ruleForm.passwd" autocomplete="off" show-password clearable></el-input>
                 </el-form-item>
                 <el-form-item class="btn-container">
                     <el-button  type="text" @click="submitForm('ruleForm')" :loading="loading">提交</el-button>
@@ -55,13 +54,13 @@ export default {
       }
     },
     props: {
-      isShow: Boolean
+      isLoginShow: Boolean
     },
     created() {},
     watch: {
-        isShow(newVal, oldVal) {
-            this.dialogVisible = newVal
-        },
+      isLoginShow(newVal, oldVal) {
+        this.dialogVisible = newVal
+      },
     },
     methods: {
       submitForm(formName) {
@@ -84,7 +83,7 @@ export default {
                 })
                 
                 this.$refs[formName].resetFields();
-                this.$emit('handleHide')
+                this.$emit('handleLoginHide')
                 
               } else {
                 this.$message.error(res.description || "登陆失败，请稍后再试~");
@@ -101,10 +100,10 @@ export default {
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
-        this.$emit('handleHide')
+        this.$emit('handleLoginHide')
       },
       handleClose() {
-        this.$emit('handleHide')
+        this.$emit('handleLoginHide')
       }
     }
   }

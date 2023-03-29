@@ -1,40 +1,50 @@
 <template>
   <div id="app">
     <div class="layout-wrap">
-      <HeaderComp @handleShow="handleShow" />
-      <LeftBar />
+      <HeaderComp @handleLoginShow="handleLoginShow"  @handleRegistShow="handleRegistShow"/>
+      <!-- <LeftBar /> -->
       <div class="right-content-contain">
         <router-view></router-view>
       </div>
 
-      <Login :isShow="isShow" @handleHide="handleHide"/>
+      <Login :isLoginShow="isLoginShow" @handleLoginHide="handleLoginHide"/>
+      <Register :isRegistShow="isRegistShow" @handleRegistHide="handleRegistHide"/>
     </div>
   </div>
 </template>
 
 <script>
-import LeftBar from "./components/LeftBar.vue"
+// import LeftBar from "./components/LeftBar.vue"
 import HeaderComp from "./components/Header.vue"
 import Login from './components/Login.vue'
+import Register from './components/Register.vue'
 export default {
   name: 'App',
   data(){
     return {
-      isShow: false,
+      isLoginShow: false,
+      isRegistShow: false
     }
   },
   components: {
-    LeftBar,
+    // LeftBar,
     HeaderComp,
-    Login
+    Login,
+    Register
   },
   mounted(){},
   methods: {
-    handleShow() {
-      this.isShow = true
+    handleLoginShow() {
+      this.isLoginShow = true
     },
-    handleHide() {
-      this.isShow = false
+    handleLoginHide() {
+      this.isLoginShow = false
+    },
+    handleRegistShow() {
+      this.isRegistShow = true
+    },
+    handleRegistHide() {
+      this.isRegistShow = false
     }
   }
 }
@@ -45,8 +55,8 @@ export default {
   display: flex;
 }
 .right-content-contain{
-  margin-top: 56px;
-  margin-left: 298px;
+  margin-top: 61px;
+  /* margin-left: 298px; */
   flex-grow: 1;
 }
 </style>

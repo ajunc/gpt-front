@@ -2,27 +2,28 @@
   <div class="index-container">
     <div class="chartContainer">
       <div class="box">
-          <div class="title">ChartGPT AI</div>
-          <div class="ulView" id="ulView">
-                <div v-for="(item,index) in chartList" :key="index" class="chart-item">
-                  <span v-if="item.role == 'system'" class="u-logo">
-                    <img class="gpt-logo" src="../../public/ChatGPT.png" alt="">
-                  </span>
-                  <span v-else-if="item.role == 'user'" class="u-logo">
-                      <img class="user-logo" src="../../public/user.jpeg" alt="">
-                  </span>
-                  <div class="conten-container">
-                    <img :src="item.image_url" alt="" v-if="item.result_type == 2" width="100px">
-                    <div>
-                      {{item.output}}
-                    </div>
-                  </div>
+          <!-- <div class="title">ChatGPT AI</div> -->
+          <div class="ulView" id="ulView" ref="mianscroll">
+            <div v-for="(item,index) in chartList" :key="index" class="chart-wrap">
+              <div :class="item.role == 'user' ? `chart-item chat-item-user` : 'chart-item'">
+                <span v-if="item.role == 'system'" class="u-logo">
+                  <img class="gpt-logo" src="../assets/logo.png" alt="">
+                </span>
+                <span v-else-if="item.role == 'user'" class="u-logo">
+                    <img class="user-logo" src="../assets/user.webp" alt="">
+                </span>
+                <div class="conten-container">
+                  <img :src="item.image_url" alt="" v-if="item.result_type == 2" width="300px">
+                  <!-- <div v-highlight v-html="item.output"></div> -->
+                  <vue-markdown v-highlight :source="item.output"></vue-markdown>
                 </div>
-                <div class="loading-tip" v-show="isLoading">Loading...</div>
+              </div>
+            </div>
+            <div class="loading-tip" v-show="isLoading">Loading...</div>
           </div>
           <div class="inputBox">
               <div class="sendContainer">
-                  <input v-model="inputMsg" class="inputMsg" placeholder="" type="text" />
+                  <input v-model="inputMsg" class="inputMsg" placeholder="" type="text"  @keyup.enter="handleSend" />
                   <div class="send" id="btn" @click="handleSend">
                       <img src="../../public/send_grey.png" alt="" class="send-icon">
                   </div>
@@ -34,7 +35,9 @@
 </template>
 
 <script>
-import {targetWsPort} from '../../proxy'
+import VueMarkdown from 'vue-markdown'
+// 引入样式
+import "highlight.js/styles/default.css";
 import { getUserinfoApi, queryLargeModel } from "../api"
 export default {
   name: 'Index',
@@ -49,7 +52,7 @@ export default {
     }
   },
   components: {
-    
+    VueMarkdown
   },
   props: {
     msg: String
@@ -60,7 +63,7 @@ export default {
   mounted() {
     this.addMsg(2, {
       status: '',
-      output: '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！',
+      output: '你好，我是ChatGPT,一个由OpenAI训练的大型语言模型！',
       result_type: 1,
       image_url: ''
     })
@@ -125,17 +128,18 @@ export default {
       })
     },
     addMsg: function(type, obj) {
-        if(type == 1) {
-            this.chartList.push({
-                role: 'user',
-                ...obj
-            })
-        } else {
-            this.chartList.push({
-                role: 'system',
-                ...obj
-            })
-        }
+      if(type == 1) {
+        this.chartList.push({
+            role: 'user',
+            ...obj
+        })
+      } else {
+        this.chartList.push({
+            role: 'system',
+            ...obj
+        })
+      }
+      this.scrollTOBottom()
     },
 
     CreateWebSocket: (() => {
@@ -146,8 +150,15 @@ export default {
       }
     })(),
 
+    scrollTOBottom: function() {
+      this.$nextTick(() => {
+        let scrollEl = this.$refs.mianscroll;
+        scrollEl.scrollTo({ top: scrollEl.scrollHeight, behavior: 'smooth' });
+      });
+    },
+
     handleSend: function() {
-      if(this.isLoading) {
+      if(this.isLoading || !this.inputMsg) {
         return
       }
         this.isLoading = true
@@ -163,8 +174,28 @@ export default {
           messages: encodeURI(params),
           conversation_id: this.conversation_id || ''
         }).then( res => {
+          this.inputMsg = ""
+          let resCp = JSON.parse(JSON.stringify(res))
+          // resCp.output = "```" + resCp.output + "```"
+          // debugger
+          // resCp.output =  marked(resCp.output)
+          // debugger
           if(res.status == "OK" || res.status == "ANONYMOUS_USER") { //用户已登录
-            this.addMsg(2, res);
+            this.addMsg(2, resCp);
+
+            this.$store.dispatch("HandleUserInfo", {
+              remaining_words: res.remaining.remaining_words,
+              remaining_images: res.remaining.remaining_images
+            })
+          } else if (res.status == "ERROR_ANONYMOUS") { // 匿名用户免费试用已达3次，需要注册
+            this.addMsg(2, resCp);
+
+            this.$store.dispatch("HandleUserInfo", {
+              remaining_words: res.remaining.remaining_words,
+              remaining_images: res.remaining.remaining_images
+            })
+          } else if (res.status == "ERROR_NO_BALANCE"){  // 登录用户免费试用已达n次，需要充值
+            this.addMsg(2, resCp);
 
             this.$store.dispatch("HandleUserInfo", {
               remaining_words: res.remaining.remaining_words,
@@ -187,22 +218,20 @@ export default {
 </script>
 
 <style scoped>
+::v-deep p {
+  margin: 0;
+}
 .index-container{
     display: flex;
 }
 .conten-container{
-    max-width: 90%;
-    min-width: 10%;
-    background: #f5f5f5;
-    border: 1px solid #dbdbdb;
-    border-radius: 2px;
-    padding: 12px;
     font-size: 14px;
     line-height: 1.3;
     font-family: PingFang SC;
     font-weight: 500;
     color: #3c3c3c;
     word-wrap: break-word;
+    padding-top: 7px;
 }
 .chartContainer{
     width: 100%;
@@ -219,16 +248,28 @@ export default {
     width: 25px;
 }
 .sendContainer{
-    width: 90%;
+    max-width: 800px;
+    min-width: 400px;
     position: relative;
     margin: 0 auto;
+}
+.chart-wrap{
+  /* margin-bottom: 10px; */
+}
+.chat-item-user{
+  background-color: transparent !important;
+  margin-bottom: 0px !important;
+  box-shadow: none !important;
 }
 .chart-item{
   display: flex;
   line-height: 1;
-  width: 600px;
+  background-color: #fff;
+  border-radius: 8px;
+  max-width: 800px;
   text-align: left;
-  margin: 00px auto;
+  margin: 0px auto 20px;
+  box-shadow: 0 16px 20px 0 rgb(174 167 223 / 6%);
   padding: 8px;
 }
 .u-logo{
@@ -245,8 +286,14 @@ export default {
   border-radius: 5px;
 }
 .ulView{
-  height: 500px;
+  box-sizing: border-box;
+  height: calc(100vh - 133px);
   overflow-y: scroll;
+  padding: 20px 0;
+  scroll-behavior: auto;
+}
+.ulView::-webkit-scrollbar {
+  display: none;
 }
 .loading-tip{
   text-align: center;
@@ -254,7 +301,8 @@ export default {
 .inputBox{
   position: fixed;
   bottom: 0;
-  left: 300px;
+  /* left: 300px; */
+  left: 0;
   right: 0;
   padding: 15px;
   text-align: center;

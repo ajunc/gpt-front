@@ -8,6 +8,8 @@ import VueRouter from 'vue-router'
 const Register = ()=>import('../views/Register');
 const AdministerPay = ()=>import('../views/AdministerPay');
 const Index = ()=>import('../views/index');
+const PersonalCenter = ()=>import('../views/PersonalCenter');
+const PackageRecharge = ()=>import('../views/PackageRecharge');
 
 //申明使用插件
 Vue.use(VueRouter)
@@ -29,6 +31,16 @@ export default new VueRouter({
     {
       path:'/administer_pay',
       component: AdministerPay,
+      meta: {}
+    },
+    {
+      path:'/personal_center',
+      component: PersonalCenter,
+      meta: {}
+    },
+    {
+      path:'/package_recharge',
+      component: PackageRecharge,
       meta: {}
     },
     {
