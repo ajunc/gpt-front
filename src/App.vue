@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="layout-wrap">
-      <HeaderComp @handleLoginShow="handleLoginShow"  @handleRegistShow="handleRegistShow"/>
+      <HeaderComp />
       <!-- <LeftBar /> -->
       <div class="right-content-contain">
         <router-view></router-view>

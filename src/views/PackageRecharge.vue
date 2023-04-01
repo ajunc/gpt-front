@@ -61,6 +61,9 @@
     background-color: #fff;
     padding: 20px 20px 160px;
   }
+    .group-desc{
+        text-align: center;
+    }
     .recharge-title{
         text-align: center;
         margin-bottom: 15px;

@@ -32,15 +32,13 @@
       </div>
     </div>
 
-    <Login ref="loginRef" />
-    <Register ref="registerRef" />
+    <TipModel ref="tipModelRef" :tip="tipContent"></TipModel>
     
   </div>
 </template>
 
 <script>
-import Login from '../components/Login.vue'
-import Register from '../components/Register.vue'
+import TipModel from '../components/TipModel.vue'
 import VueMarkdown from 'vue-markdown'
 // 引入样式
 import "highlight.js/styles/default.css";
@@ -54,13 +52,13 @@ export default {
       isLoading: false,
       user_account: '',
       conversation_id: '',
+      tipContent: '',
       ws: ''
     }
   },
   components: {
     VueMarkdown,
-    Login,
-    Register
+    TipModel,
   },
   props: {
     msg: String
@@ -197,6 +195,8 @@ export default {
             })
           } else if (res.status == "ERROR_ANONYMOUS") { // 匿名用户免费试用已达3次，需要注册
             this.addMsg(2, resCp);
+            this.tipContent = "游客模式每天可免费体验3次，请登录获取更多免费次数"
+            this.$refs.tipModelRef.handleShowTipModel()
 
             this.$store.dispatch("HandleUserInfo", {
               remaining_words: res.remaining.remaining_words,
@@ -204,6 +204,7 @@ export default {
             })
           } else if (res.status == "ERROR_NO_BALANCE"){  // 登录用户免费试用已达n次，需要充值
             this.addMsg(2, resCp);
+            this.tipContent = "已登录用户每天可免费体验10次，您的余额已不足，请充值！"
 
             this.$store.dispatch("HandleUserInfo", {
               remaining_words: res.remaining.remaining_words,
@@ -217,8 +218,8 @@ export default {
           this.loading = false
           this.isLoading = false
         }).catch( error => {
-          console.log(error)
           this.loading = false
+          console.log(error)
         })
     }
   }

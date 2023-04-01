@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Message } from 'element-ui';
 
 // 创建axios实例
 const service = axios.create({
@@ -38,6 +39,9 @@ service.interceptors.response.use(
             if(!error) {
                 resolve()
             }
+            Message.error({
+                message: "网络请求失败请稍后再试~"
+            });
             console.log('err' + error) 
             reject(error.response)
         })
