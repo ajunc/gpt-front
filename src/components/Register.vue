@@ -95,6 +95,12 @@ export default {
       },
     },
     methods: {
+      handleRegistShow() {
+        this.dialogVisible = true
+      },
+      handleRegistHide() {
+        this.dialogVisible = false
+      },
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -114,7 +120,7 @@ export default {
                   remaining_images:  res.remaining.remaining_words
                 })
 
-                this.$emit('handleRegistHide')
+                this.handleRegistHide()
 
               } else {
                 this.$message.error(res.description || "注册失败，请稍后再试~");
@@ -132,10 +138,10 @@ export default {
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
-        this.$emit('handleRegistHide')
+        this.handleRegistHide()
       },
       handleClose() {
-        this.$emit('handleRegistHide')
+        this.handleRegistHide()
       }
     }
   }

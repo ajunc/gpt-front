@@ -2,39 +2,45 @@
   <div class="index-container">
     <div class="chartContainer">
       <div class="box">
-          <!-- <div class="title">ChatGPT AI</div> -->
-          <div class="ulView" id="ulView" ref="mianscroll">
-            <div v-for="(item,index) in chartList" :key="index" class="chart-wrap">
-              <div :class="item.role == 'user' ? `chart-item chat-item-user` : 'chart-item'">
-                <span v-if="item.role == 'system'" class="u-logo">
-                  <img class="gpt-logo" src="../assets/logo.png" alt="">
-                </span>
-                <span v-else-if="item.role == 'user'" class="u-logo">
-                    <img class="user-logo" src="../assets/user.webp" alt="">
-                </span>
-                <div class="conten-container">
-                  <img :src="item.image_url" alt="" v-if="item.result_type == 2" width="300px">
-                  <!-- <div v-highlight v-html="item.output"></div> -->
-                  <vue-markdown v-highlight :source="item.output"></vue-markdown>
-                </div>
+        <!-- <div class="title">ChatGPT AI</div> -->
+        <div class="ulView" id="ulView" ref="mianscroll">
+          <div v-for="(item,index) in chartList" :key="index" class="chart-wrap">
+            <div :class="item.role == 'user' ? `chart-item chat-item-user` : 'chart-item'">
+              <span v-if="item.role == 'system'" class="u-logo">
+                <img class="gpt-logo" src="../assets/logo.png" alt="">
+              </span>
+              <span v-else-if="item.role == 'user'" class="u-logo">
+                  <img class="user-logo" src="../assets/user.webp" alt="">
+              </span>
+              <div class="conten-container">
+                <img :src="item.image_url" alt="" v-if="item.result_type == 2" width="300px">
+                <!-- <div v-highlight v-html="item.output"></div> -->
+                <vue-markdown v-highlight :source="item.output"></vue-markdown>
               </div>
             </div>
-            <div class="loading-tip" v-show="isLoading">Loading...</div>
           </div>
-          <div class="inputBox">
-              <div class="sendContainer">
-                  <input v-model="inputMsg" class="inputMsg" placeholder="" type="text"  @keyup.enter="handleSend" />
-                  <div class="send" id="btn" @click="handleSend">
-                      <img src="../../public/send_grey.png" alt="" class="send-icon">
-                  </div>
-              </div>
-          </div>
+          <div class="loading-tip" v-show="isLoading">Loading...</div>
+        </div>
+        <div class="inputBox">
+            <div class="sendContainer">
+                <input v-model="inputMsg" class="inputMsg" placeholder="" type="text"  @keyup.enter="handleSend" />
+                <div class="send" id="btn" @click="handleSend">
+                    <img src="../../public/send_grey.png" alt="" class="send-icon">
+                </div>
+            </div>
         </div>
       </div>
+    </div>
+
+    <Login ref="loginRef" />
+    <Register ref="registerRef" />
+    
   </div>
 </template>
 
 <script>
+import Login from '../components/Login.vue'
+import Register from '../components/Register.vue'
 import VueMarkdown from 'vue-markdown'
 // 引入样式
 import "highlight.js/styles/default.css";
@@ -52,7 +58,9 @@ export default {
     }
   },
   components: {
-    VueMarkdown
+    VueMarkdown,
+    Login,
+    Register
   },
   props: {
     msg: String

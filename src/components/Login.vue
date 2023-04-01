@@ -58,11 +58,17 @@ export default {
     },
     created() {},
     watch: {
-      isLoginShow(newVal, oldVal) {
-        this.dialogVisible = newVal
-      },
+      //isLoginShow(newVal, oldVal) {
+      //  this.dialogVisible = newVal
+      //},
     },
     methods: {
+      handleLoginShow() {
+        this.dialogVisible = true
+      },
+      handleLoginHide() {
+        this.dialogVisible = false
+      },
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -83,7 +89,7 @@ export default {
                 })
                 
                 this.$refs[formName].resetFields();
-                this.$emit('handleLoginHide')
+                this.handleLoginHide()
                 
               } else {
                 this.$message.error(res.description || "登陆失败，请稍后再试~");
@@ -100,10 +106,10 @@ export default {
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
-        this.$emit('handleLoginHide')
+        this.handleLoginHide()
       },
       handleClose() {
-        this.$emit('handleLoginHide')
+        this.handleLoginHide()
       }
     }
   }

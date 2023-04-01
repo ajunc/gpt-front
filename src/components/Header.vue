@@ -1,5 +1,6 @@
-<template>
-    <header class="header-container">
+  <template>
+    <div>
+      <header class="header-container">
         <div class="logon-container" @click="toIndex">
           <img src="../assets/logo.png" alt="">
           <span class="logo-title"> ChatGPT 智能AI机器人</span>
@@ -26,11 +27,15 @@
             <el-button @click="toRegister" type="text">注册</el-button>
           </div>
         </div>
-        
-    </header>
+      </header>
+      <Login ref="loginRef" />
+      <Register ref="registerRef" />
+    </div>
   </template>
   
   <script>
+  import Login from './Login.vue'
+  import Register from './Register.vue'
   import { logout } from "../api"
   import { mapGetters, mapState } from 'vuex'
   export default {
@@ -46,6 +51,10 @@
     created() {},
     watch: {
         
+    },
+    components:{
+      Login,
+      Register
     },
     computed: {
         ...mapGetters([
@@ -69,10 +78,10 @@
         this.$router.push('/')
       },
       handleShowLogin() {
-        this.$emit('handleLoginShow')
+        this.$refs.loginRef.handleLoginShow()
       },
       toRegister() {
-        this.$emit('handleRegistShow')
+        this.$refs.registerRef.handleRegistShow()
       },
       handleLogout() {
         logout().then( res => {
@@ -118,11 +127,11 @@
     .logo-title{
       color: #04AA7C;
       font-weight: 600;
-      font-size: 15px;
+      font-size: 12px;
       margin-left: 10px;
     }
     img {
-      height: 36px;
+      height: 28px;
     }
   }
   ::v-deep .el-menu{
