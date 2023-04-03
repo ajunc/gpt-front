@@ -2,7 +2,6 @@
   <div class="index-container">
     <div class="chartContainer">
       <div class="box">
-        <!-- <div class="title">ChatGPT AI</div> -->
         <div class="ulView" id="ulView" ref="mianscroll">
           <div v-for="(item,index) in chartList" :key="index" class="chart-wrap">
             <div :class="item.role == 'user' ? `chart-item chat-item-user` : 'chart-item'">
@@ -14,7 +13,6 @@
               </span>
               <div class="conten-container">
                 <img :src="item.image_url" alt="" v-if="item.result_type == 2" width="300px">
-                <!-- <div v-highlight v-html="item.output"></div> -->
                 <vue-markdown v-highlight :source="item.output"></vue-markdown>
               </div>
             </div>
@@ -38,6 +36,7 @@
 </template>
 
 <script>
+import { mapGetters, mapState } from 'vuex'
 import TipModel from '../components/TipModel.vue'
 import VueMarkdown from 'vue-markdown'
 // 引入样式
@@ -47,11 +46,9 @@ export default {
   name: 'Index',
   data() {
     return {
-      chartList: [],
       inputMsg: '',
       isLoading: false,
       user_account: '',
-      conversation_id: '',
       tipContent: '',
       ws: ''
     }
@@ -66,6 +63,12 @@ export default {
   created() {
     this.getUserInfo()
   },
+  computed: {
+    ...mapGetters([
+      'conversation_id',
+      'chartList'
+    ]),
+  },
   mounted() {
     this.addMsg(2, {
       status: '',
@@ -73,38 +76,8 @@ export default {
       result_type: 1,
       image_url: ''
     })
-    // let that = this
-    // this.user_account = Math.floor(Math.random() * 10000000000)
-    this.conversation_id = Math.floor(Math.random() * 10000000000)
-    // this.ws = this.CreateWebSocket(`ws://47.254.45.52:3000`)
-    // this.ws = this.CreateWebSocket(targetWsPort)
-    // this.ws.onopen = () => {
-    //     // this.addMsg(2, '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！')
-    //     this.addMsg(2, {
-    //       status: '',
-    //       output: '你好，我是人工智能ChatGPT,一个由OpenAI训练的大型语言模型！',
-    //       result_type: 1,
-    //       image_url: ''
-    //   })
-    // }
-    // this.ws.onmessage = evt => {
-    //     // 这是服务端返回的数据
-    //     console.log('evt.data-------', evt.data)
-    //     console.log('evt.data-------', typeof evt.data)
-    //     that.inputMsg = ''
-    //     that.isLoading = false
-    //     let res = evt && evt.data && JSON.parse(evt.data)
-    //     that.addMsg(2, res);
-
-    //     if(res.status == "OK" || res.status == "ANONYMOUS_USER") {
-    //       this.$store.dispatch("HandleUserInfo", {
-    //         remaining_words: res.remaining.remaining_words,
-    //         remaining_images: res.remaining.remaining_images
-    //       })
-    //     } else if(res.status == "INVALID_TOKEN") {
-    //       this.getUserInfo()
-    //     }
-    // }
+    let id = Math.floor(Math.random() * 10000000000)
+    this.$store.dispatch("SaveConversationId", id)
   },
   methods: {
     getUserInfo: function(){
@@ -135,12 +108,12 @@ export default {
     },
     addMsg: function(type, obj) {
       if(type == 1) {
-        this.chartList.push({
+        this.$store.dispatch("AddChatList", {
             role: 'user',
             ...obj
         })
       } else {
-        this.chartList.push({
+        this.$store.dispatch("AddChatList", {
             role: 'system',
             ...obj
         })
@@ -310,8 +283,7 @@ export default {
 .inputBox{
   position: fixed;
   bottom: 0;
-  /* left: 300px; */
-  left: 0;
+  left: 300px;
   right: 0;
   padding: 15px;
   text-align: center;

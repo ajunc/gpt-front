@@ -32,6 +32,7 @@
   </template>
   
 <script>
+import { getChatList } from "../api"
 import { login } from "../api"
 export default {
     name: 'Login',
@@ -69,6 +70,24 @@ export default {
       handleLoginHide() {
         this.dialogVisible = false
       },
+      getConversationList() {
+        let params = {
+          search_word: '',
+          page: 0,
+          num_per_page: 10
+        }
+        // this.listLoading = true
+        getChatList(params).then( res => {
+          // this.listLoading = false
+          if(res.status == "ok") {
+            this.$store.dispatch("InitAndAddChatList", res.conversation_history)
+            // this.chatListData = res.conversation_history
+          }
+        }).catch( error => {
+          console.log(error)
+          // this.loading = false
+        })
+      },
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -90,6 +109,9 @@ export default {
                 
                 this.$refs[formName].resetFields();
                 this.handleLoginHide()
+
+                // 获取会话历史
+                this.getConversationList()
                 
               } else {
                 this.$message.error(res.description || "登陆失败，请稍后再试~");

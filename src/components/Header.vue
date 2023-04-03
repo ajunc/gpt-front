@@ -57,10 +57,10 @@
       Register
     },
     computed: {
-        ...mapGetters([
-            'isLogin',
-            'userInfo'
-        ]),
+      ...mapGetters([
+        'isLogin',
+        'userInfo'
+      ]),
     },
     methods: {
       toPersonCenter() {

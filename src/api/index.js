@@ -47,3 +47,11 @@ export function queryLargeModel (params) {
         data: params
     })
 }
+
+export function getChatList (params) {
+    return http.post({
+        url: '/api/get_conversation_history',
+        method: 'get',
+        data: params
+    })
+}
