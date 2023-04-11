@@ -6,7 +6,7 @@
     </div>
     <div class="row-line"></div>
     <div class="chat-list-container">
-      <div class="chat-item" v-for="(item,index) in chatListLeft" :key="index">
+      <div :class="item.conversation_id == conversation_id ? 'chat-item bg-select' : 'chat-item'" v-for="(item,index) in chatListLeft" :key="index" @click="getChatListDetailsFn(item)">
         <img class="chat-comment" src="../../public/comment.png" alt="">
         <span>{{ item.conversation_name }}</span>
       </div>
@@ -16,7 +16,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
-import { getChatList } from "../api"
+import { getChatList, getChatListDetails } from "../api"
 export default {
   name: 'LeftBar',
   data() {
@@ -35,6 +35,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'conversation_id',
       'chatListLeft'
     ]),
   },
@@ -60,9 +61,34 @@ export default {
       this.listLoading = true
       getChatList(params).then( res => {
         this.listLoading = false
-        if(res.status == "ok") {
+        if(res.status == "OK") {
           // this.chatListData = res.conversation_history
           this.$store.dispatch("InitAndAddChatList", res.conversation_history)
+        }
+      }).catch( error => {
+        console.log(error)
+        this.loading = false
+      })
+    },
+
+    // 点击会话，获取当前会话详细信息
+    getChatListDetailsFn(item) {
+      this.$store.dispatch("SaveConversationId", item.conversation_id)
+      let params = {
+        conversation_id: item.conversation_id,
+        page: 0,
+        num_per_page: 10
+      }
+      getChatListDetails(params).then( res => {
+        if(res.status == "OK") {
+          let resData = JSON.parse(JSON.stringify(res.conversation_details))
+          resData && resData.forEach((item) => {
+            item['output'] = item.content
+            if(item.role === "assistant") {
+              item.role = "system"
+            }
+          })
+          this.$store.dispatch("ResetChatList", resData)
         }
       }).catch( error => {
         console.log(error)
@@ -103,10 +129,18 @@ export default {
 }
 .chat-item{
     display: flex;
-    background: #073a2e;
+    /* background: #073a2e; */
     border-radius: 5px;
     font-size: 14px;
     padding: 8px;
+    margin-bottom: 10px;
+}
+.bg-select{
+  background: #073a2e;
+}
+.chat-item:hover{
+  cursor: pointer;
+  background: #073a2e; 
 }
 .chat-comment{
   width: 17px;

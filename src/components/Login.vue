@@ -79,7 +79,8 @@ export default {
         // this.listLoading = true
         getChatList(params).then( res => {
           // this.listLoading = false
-          if(res.status == "ok") {
+          debugger
+          if(res.status == "OK") {
             this.$store.dispatch("InitAndAddChatList", res.conversation_history)
             // this.chatListData = res.conversation_history
           }

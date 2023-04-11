@@ -90,6 +90,8 @@
               message: '已退出登陆！',
               type: 'success'
             });
+
+            this.$store.dispatch("InitAndAddChatList", [])
             
             this.$store.dispatch("HandleIslogin", false)
             this.$store.dispatch("HandleUserInfo", {

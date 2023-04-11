@@ -30,6 +30,9 @@ const app = {
         CLEAR_CHAT_LIST: (state, item) => {
             state.chartList = [item]
         },
+        RESET_CHAT_LIST: (state, arr) => {
+            state.chartList = arr
+        },
         INIT_AND_ADD_CHAT_LIST: (state, arr) => {
             state.chatListLeft = arr
         },
@@ -49,6 +52,9 @@ const app = {
         },
         ClearChatList ({commit}, item) {
             commit('CLEAR_CHAT_LIST', item)
+        },
+        ResetChatList ({commit}, arr) {
+            commit('RESET_CHAT_LIST', arr)
         },
         InitAndAddChatList ({commit}, item) {
             commit('INIT_AND_ADD_CHAT_LIST', item)

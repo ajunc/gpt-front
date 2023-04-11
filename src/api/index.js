@@ -55,3 +55,11 @@ export function getChatList (params) {
         data: params
     })
 }
+
+export function getChatListDetails (params) {
+    return http.post({
+        url: '/api/get_conversation_details',
+        method: 'get',
+        data: params
+    })
+}
